@@ -20,3 +20,6 @@ platform/data/skills.db
 # OS
 .DS_Store
 Thumbs.db
+
+# IDE
+.idea/
