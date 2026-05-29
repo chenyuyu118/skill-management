@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSkillById, deleteSkill } from "@/lib/db";
+import { getSkillById, getSkillVersion, deleteSkill } from "@/lib/db";
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const skill = await getSkillById(id);
+  const version = req.nextUrl.searchParams.get("version");
+  const skill = version ? await getSkillVersion(id, version) : await getSkillById(id);
   if (!skill) return NextResponse.json({ error: "not found" }, { status: 404 });
   return NextResponse.json(skill);
 }

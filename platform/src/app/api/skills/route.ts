@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { searchSkills, upsertSkill, getSkillById } from "@/lib/db";
+import { searchSkills, publishVersion } from "@/lib/db";
 import { Skill, SkillFile } from "@/types";
 import crypto from "crypto";
 
@@ -39,8 +39,7 @@ export async function POST(req: NextRequest) {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  const existing = await getSkillById(body.name as string);
-  const result = await upsertSkill(skill);
-  const status = existing ? 200 : 201;
-  return NextResponse.json(result, { status });
+  const result = await publishVersion(skill);
+  if ("error" in result) return NextResponse.json({ error: result.error }, { status: 409 });
+  return NextResponse.json(result.skill, { status: result.created ? 201 : 200 });
 }

@@ -25,8 +25,13 @@ export async function listSkills(query?: string) {
   return api(`/api/skills${q}`);
 }
 
-export async function getSkill(id: string) {
-  return api(`/api/skills/${encodeURIComponent(id)}`);
+export async function getSkill(id: string, version?: string) {
+  const q = version ? `?version=${encodeURIComponent(version)}` : "";
+  return api(`/api/skills/${encodeURIComponent(id)}${q}`);
+}
+
+export async function getSkillVersions(id: string) {
+  return api(`/api/skills/${encodeURIComponent(id)}/versions`);
 }
 
 export async function deleteRemoteSkill(id: string) {

@@ -1,4 +1,4 @@
-import { getSkillById } from "@/lib/db";
+import { getSkillById, getSkillVersions } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ export default async function SkillDetail({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const skill = await getSkillById(id);
   if (!skill) notFound();
+  const versions = await getSkillVersions(id);
 
   return (
     <div className="max-w-4xl mx-auto p-8">
@@ -56,6 +57,22 @@ export default async function SkillDetail({ params }: { params: Promise<{ id: st
                   <pre className="bg-muted p-3 rounded-md text-xs overflow-x-auto">{f.content}</pre>
                 </div>
               ))}
+            </div>
+          )}
+
+          {versions.length > 0 && (
+            <div>
+              <h3 className="font-medium mb-2">版本历史</h3>
+              <div className="space-y-1">
+                {versions.map((v) => (
+                  <div key={v.version} className="flex items-center gap-2 text-sm">
+                    <Badge className={v.version === skill.version ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}>
+                      v{v.version}{v.version === skill.version ? " (latest)" : ""}
+                    </Badge>
+                    <span className="text-muted-foreground">{new Date(v.createdAt).toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
