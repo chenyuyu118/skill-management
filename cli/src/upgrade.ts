@@ -1,4 +1,5 @@
 import { getLatestCli } from "./api";
+import { getConfig } from "./config";
 import { execSync } from "child_process";
 import { writeFileSync, chmodSync, renameSync, unlinkSync } from "fs";
 import { tmpdir } from "os";
@@ -16,11 +17,16 @@ export async function checkUpgrade() {
   if (!latest) { console.log("No release info available from server."); return; }
   if (latest.version === VERSION) { console.log("✓ Already up to date."); return; }
 
+  // downloadUrl 可能是相对路径（/api/cli/download/...），需拼接 apiBase
+  const url = /^https?:\/\//.test(latest.downloadUrl)
+    ? latest.downloadUrl
+    : `${getConfig().apiBase}${latest.downloadUrl}`;
+
   console.log(`New version available: v${latest.version}`);
-  console.log(`Downloading from: ${latest.downloadUrl}`);
+  console.log(`Downloading from: ${url}`);
 
   const tmpFile = join(tmpdir(), `skill-update-${Date.now()}`);
-  const res = await fetch(latest.downloadUrl);
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`Download failed: ${res.status}`);
 
   const buf = Buffer.from(await res.arrayBuffer());

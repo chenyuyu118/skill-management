@@ -2,6 +2,7 @@ import { getSkillById } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { DeleteSkillButton } from "@/components/delete-skill-button";
 import Link from "next/link";
 
 export default async function SkillDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -20,7 +21,10 @@ export default async function SkillDetail({ params }: { params: Promise<{ id: st
               <CardTitle className="text-2xl">{skill.name}</CardTitle>
               <p className="text-muted-foreground mt-1">{skill.description}</p>
             </div>
-            <Badge className="bg-primary text-primary-foreground">v{skill.version}</Badge>
+            <div className="flex items-center gap-2">
+              <Badge className="bg-primary text-primary-foreground">v{skill.version}</Badge>
+              <DeleteSkillButton id={skill.id} name={skill.name} />
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">

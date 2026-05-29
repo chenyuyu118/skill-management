@@ -12,6 +12,10 @@ bun.lock
 # CLI build artifacts
 cli/dist/
 cli/node_modules/
+# 散落的 CLI 二进制产物（测试上传时误留）
+skill-darwin-*
+skill-linux-*
+skill-windows-*
 
 # Platform
 platform/node_modules/

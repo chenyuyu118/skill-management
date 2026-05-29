@@ -20,5 +20,11 @@
       "database_name": "skill-mgt",
       "database_id": "3ad8c24d-467a-4525-a109-eaed723ff758"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "CLI_BUCKET",
+      "bucket_name": "skill-cli-releases"
+    }
   ]
 }

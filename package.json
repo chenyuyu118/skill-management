@@ -1,5 +1,8 @@
 {
   "name": "skill-management",
   "private": true,
-  "workspaces": ["platform", "cli"]
+  "workspaces": ["platform", "cli"],
+  "scripts": {
+    "release:cli": "node scripts/release-cli.mjs"
+  }
 }
