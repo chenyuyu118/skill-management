@@ -27,7 +27,7 @@ export default function PublishPage() {
       }),
     });
     if (res.ok) {
-      const skill = await res.json();
+      const skill = (await res.json()) as { id: string };
       router.push(`/skills/${skill.id}`);
     } else {
       setLoading(false);

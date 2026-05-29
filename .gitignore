@@ -16,6 +16,9 @@ cli/node_modules/
 # Platform
 platform/node_modules/
 platform/data/skills.db
+platform/.open-next
+platform/.dev.vars
+platform/.wrangler
 
 # OS
 .DS_Store

@@ -2,12 +2,11 @@ import { getSkillById } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default async function SkillDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const skill = getSkillById(id);
+  const skill = await getSkillById(id);
   if (!skill) notFound();
 
   return (

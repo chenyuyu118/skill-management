@@ -10,7 +10,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ q?: str
 
 async function HomeContent({ searchParams }: { searchParams: Promise<{ q?: string; tag?: string }> }) {
   const { q, tag } = await searchParams;
-  const skills = searchSkills(q, tag);
+  const skills = await searchSkills(q, tag);
 
   return (
     <div className="max-w-6xl mx-auto p-8">
