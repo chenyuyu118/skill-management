@@ -1,0 +1,22 @@
+node_modules
+.next
+dist
+out
+*.tgz
+.env.local
+.env
+
+# Bun
+bun.lock
+
+# CLI build artifacts
+cli/dist/
+cli/node_modules/
+
+# Platform
+platform/node_modules/
+platform/data/skills.db
+
+# OS
+.DS_Store
+Thumbs.db

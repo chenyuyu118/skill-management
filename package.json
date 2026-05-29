@@ -1,0 +1,5 @@
+{
+  "name": "skill-management",
+  "private": true,
+  "workspaces": ["platform", "cli"]
+}
