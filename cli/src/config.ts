@@ -7,6 +7,7 @@ const CONFIG_FILE = join(CONFIG_DIR, "config.json");
 
 export interface Config {
   apiBase: string;
+  password?: string; // 平台访问密码（公司内部共享）
 }
 
 const DEFAULT_CONFIG: Config = { apiBase: "http://localhost:3000" };

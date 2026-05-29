@@ -2,6 +2,7 @@ import { searchSkills } from "@/lib/db";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LogoutButton } from "@/components/logout-button";
 import Link from "next/link";
 
 export default function Home({ searchParams }: { searchParams: Promise<{ q?: string; tag?: string }> }) {
@@ -26,6 +27,7 @@ async function HomeContent({ searchParams }: { searchParams: Promise<{ q?: strin
           <Link href="/download">
             <Button variant="outline">下载 CLI</Button>
           </Link>
+          <LogoutButton />
         </div>
       </header>
 

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
 type Platform = "macos" | "linux" | "win";
@@ -14,10 +15,10 @@ function detect(): { platform: Platform; arch: Arch } {
   return { platform, arch };
 }
 
-const installScripts: Record<Platform, (origin: string) => string> = {
-  macos: (o) => `curl -fsSL ${o}/api/cli/install?platform=macos\\&arch=$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/') | sh`,
-  linux: (o) => `curl -fsSL ${o}/api/cli/install?platform=linux\\&arch=$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/') | sh`,
-  win: (o) => `irm "${o}/api/cli/install?platform=win&arch=x64" | iex`,
+const installScripts: Record<Platform, (origin: string, pw: string) => string> = {
+  macos: (o, pw) => `curl -fsSL -H "Authorization: Bearer ${pw}" "${o}/api/cli/install?platform=macos&arch=$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/')" | sh`,
+  linux: (o, pw) => `curl -fsSL -H "Authorization: Bearer ${pw}" "${o}/api/cli/install?platform=linux&arch=$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/')" | sh`,
+  win: (o, pw) => `$h=@{Authorization="Bearer ${pw}"}; irm "${o}/api/cli/install?platform=win&arch=x64" -Headers $h | iex`,
 };
 
 const downloads: Record<Platform, { label: string; key: string }[]> = {
@@ -56,6 +57,7 @@ export default function DownloadPage() {
   const [selected, setSelected] = useState<Platform>("macos");
   const [origin, setOrigin] = useState("");
   const [version, setVersion] = useState("");
+  const [pw, setPw] = useState("");
 
   useEffect(() => {
     const d = detect();
@@ -93,10 +95,11 @@ export default function DownloadPage() {
       <Card>
         <CardHeader>
           <CardTitle>快速安装</CardTitle>
-          <CardDescription>在终端中执行以下命令</CardDescription>
+          <CardDescription>输入访问密码后，复制命令在终端执行</CardDescription>
         </CardHeader>
-        <CardContent>
-          <pre className="bg-muted p-4 rounded-md text-sm overflow-x-auto whitespace-pre-wrap">{origin ? installScripts[selected](origin) : "..."}</pre>
+        <CardContent className="space-y-3">
+          <Input type="password" value={pw} onChange={(e) => setPw(e.target.value)} placeholder="访问密码" className="max-w-xs" />
+          <pre className="bg-muted p-4 rounded-md text-sm overflow-x-auto whitespace-pre-wrap">{origin ? installScripts[selected](origin, pw || "<访问密码>") : "..."}</pre>
         </CardContent>
       </Card>
 

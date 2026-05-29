@@ -1,8 +1,17 @@
 import { getConfig } from "./config";
 
+// 平台访问密码请求头（配置了才注入）
+export function authHeaders(): Record<string, string> {
+  const { password } = getConfig();
+  return password ? { Authorization: `Bearer ${password}` } : {};
+}
+
 async function api(path: string, options?: RequestInit) {
   const { apiBase } = getConfig();
-  const res = await fetch(`${apiBase}${path}`, options);
+  const res = await fetch(`${apiBase}${path}`, {
+    ...options,
+    headers: { ...authHeaders(), ...(options?.headers || {}) },
+  });
   if (!res.ok) throw new Error(`API error: ${res.status} ${await res.text()}`);
   return res.json();
 }

@@ -1,10 +1,19 @@
 import { homedir, platform } from "os";
-import { join } from "path";
+import { join, resolve, relative, isAbsolute } from "path";
 import { existsSync, mkdirSync, writeFileSync, rmSync } from "fs";
 
 interface SkillFile {
   path: string;
   content: string;
+}
+
+// 确保目标路径不会逃逸出 skill 安装目录（防路径穿越）
+function safeResolve(dir: string, filePath: string): string {
+  if (isAbsolute(filePath)) throw new Error(`不安全的文件路径（绝对路径）: ${filePath}`);
+  const target = resolve(dir, filePath);
+  const rel = relative(dir, target);
+  if (rel.startsWith("..") || isAbsolute(rel)) throw new Error(`不安全的文件路径（越界）: ${filePath}`);
+  return target;
 }
 
 type Platform = "kiro" | "claude" | "codex" | "cursor" | "claude-desktop";
@@ -40,7 +49,7 @@ export function installSkill(target: Platform, skillName: string, files: SkillFi
   const dir = join(baseDir, skillName);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   for (const f of files) {
-    const filePath = join(dir, f.path);
+    const filePath = safeResolve(dir, f.path);
     const fileDir = join(filePath, "..");
     if (!existsSync(fileDir)) mkdirSync(fileDir, { recursive: true });
     writeFileSync(filePath, f.content);

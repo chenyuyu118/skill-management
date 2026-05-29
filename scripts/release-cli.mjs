@@ -3,6 +3,7 @@
 // 用法: node scripts/release-cli.mjs [version]
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -45,7 +46,8 @@ for (const key of Object.keys(TARGETS)) {
 console.log("▶ [4/4] 写入 D1 release 记录...");
 for (const [key, [platform, arch]] of Object.entries(TARGETS)) {
   const url = `/api/cli/download/${TAG}/${key}`;
-  const sql = `INSERT INTO cli_releases (version, platform, arch, download_url) VALUES ('${VERSION}','${platform}','${arch}','${url}') ON CONFLICT(version,platform,arch) DO UPDATE SET download_url=excluded.download_url;`;
+  const sha256 = createHash("sha256").update(readFileSync(join(CLI_DIR, "dist", key))).digest("hex");
+  const sql = `INSERT INTO cli_releases (version, platform, arch, download_url, sha256) VALUES ('${VERSION}','${platform}','${arch}','${url}','${sha256}') ON CONFLICT(version,platform,arch) DO UPDATE SET download_url=excluded.download_url, sha256=excluded.sha256;`;
   runQuiet(`npx wrangler d1 execute DB --remote --command "${sql}"`, PLATFORM_DIR);
   console.log(`  ✓ ${platform}/${arch} -> ${url}`);
 }
