@@ -36,14 +36,16 @@ const downloads: Record<Platform, { label: string; key: string }[]> = {
 const manualSteps: Record<Platform, string[]> = {
   macos: [
     "1. 下载对应架构的可执行文件（Apple Silicon 选 arm64，Intel 选 x64）",
-    "2. 移动到 PATH 目录：mv skill-darwin-arm64 /usr/local/bin/skill",
-    "3. 添加执行权限：chmod +x /usr/local/bin/skill",
-    "4. 首次运行如遇安全提示：xattr -d com.apple.quarantine /usr/local/bin/skill",
+    "2. 安装到用户目录：mkdir -p ~/.local/bin && mv skill-darwin-arm64 ~/.local/bin/skill",
+    "3. 添加执行权限：chmod +x ~/.local/bin/skill",
+    "4. 确保 PATH 包含 ~/.local/bin（如未包含，追加 export PATH=\"$HOME/.local/bin:$PATH\" 到 ~/.zshrc）",
+    "5. 首次运行如遇安全提示：xattr -d com.apple.quarantine ~/.local/bin/skill",
   ],
   linux: [
     "1. 下载对应架构的可执行文件",
-    "2. 移动到 PATH 目录：sudo mv skill-linux-x64 /usr/local/bin/skill",
-    "3. 添加执行权限：chmod +x /usr/local/bin/skill",
+    "2. 安装到用户目录：mkdir -p ~/.local/bin && mv skill-linux-x64 ~/.local/bin/skill",
+    "3. 添加执行权限：chmod +x ~/.local/bin/skill",
+    "4. 确保 PATH 包含 ~/.local/bin（如未包含，追加 export PATH=\"$HOME/.local/bin:$PATH\" 到 ~/.bashrc）",
   ],
   win: [
     "1. 下载 skill-windows-x64.exe",
