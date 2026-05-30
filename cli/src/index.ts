@@ -2,7 +2,7 @@
 import { listSkills, getSkill, getSkillVersions, publishSkill, deleteRemoteSkill } from "./api";
 import { installSkill, uninstallSkill, PLATFORMS } from "./installer";
 import { getConfig, saveConfig } from "./config";
-import { checkUpgrade } from "./upgrade";
+import { checkUpgrade, VERSION } from "./upgrade";
 import { readSkillDir } from "./publish";
 import { pullToDir } from "./pull";
 import { readdirSync, existsSync } from "fs";
@@ -167,7 +167,7 @@ async function main() {
       break;
     }
     default:
-      console.log(`skill v0.1.0
+      console.log(`skill v${VERSION}
 
 用法:
   skill list [query]              搜索/列出可用技能

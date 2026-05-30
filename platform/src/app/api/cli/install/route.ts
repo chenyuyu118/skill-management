@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const { searchParams, origin } = req.nextUrl;
+  const { searchParams } = req.nextUrl;
   const platform = searchParams.get("platform") || "macos";
   const arch = searchParams.get("arch") || "arm64";
+  // 从请求头构造 origin（生产 runtime 下比 nextUrl.origin 更可靠）
+  const host = req.headers.get("host") || "";
+  const proto = req.headers.get("x-forwarded-proto") || "https";
+  const origin = host ? `${proto}://${host}` : req.nextUrl.origin;
   // 透传访问密码（中间件已校验过，能到这里说明密码正确）
   const pw = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "") || "";
 

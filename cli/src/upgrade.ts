@@ -5,8 +5,9 @@ import { writeFileSync, chmodSync, renameSync, unlinkSync } from "fs";
 import { createHash } from "crypto";
 import { tmpdir } from "os";
 import { join } from "path";
+import pkg from "../package.json";
 
-const VERSION = "0.1.0";
+const VERSION = pkg.version;
 
 export { VERSION };
 
@@ -26,7 +27,6 @@ export async function checkUpgrade() {
   console.log(`New version available: v${latest.version}`);
   console.log(`Downloading from: ${url}`);
 
-  const tmpFile = join(tmpdir(), `skill-update-${Date.now()}`);
   const res = await fetch(url, { headers: authHeaders() });
   if (!res.ok) throw new Error(`Download failed: ${res.status}`);
 
@@ -43,23 +43,27 @@ export async function checkUpgrade() {
     console.warn("⚠ 服务端未提供 sha256，跳过完整性校验");
   }
 
-  writeFileSync(tmpFile, buf);
-  chmodSync(tmpFile, 0o755);
-
-  // Replace current binary
-  const currentBin = process.argv[0];
-  // If running via node (dev mode), can't self-replace
-  if (currentBin.includes("node")) {
+  // 真实可执行文件路径（Bun/Node 单文件可执行均返回绝对路径）
+  const currentBin = process.execPath;
+  // 通过 node/bun 直接运行脚本（开发模式）时无法自替换：execPath 指向运行时而非已安装的 skill
+  const base = currentBin.split("/").pop() || "";
+  if (base === "node" || base === "bun") {
+    const tmpFile = join(tmpdir(), `skill-update-${Date.now()}`);
+    writeFileSync(tmpFile, buf);
+    chmodSync(tmpFile, 0o755);
     console.log(`✓ Downloaded to: ${tmpFile}`);
-    console.log(`  Move manually: mv ${tmpFile} /usr/local/bin/skill`);
+    console.log(`  Move manually: mv ${tmpFile} ~/.local/bin/skill`);
     return;
   }
 
+  // 临时文件写在目标同目录，保证 rename 在同一文件系统内（避免 EXDEV）
+  const tmpFile = `${currentBin}.new`;
   const backupFile = `${currentBin}.bak`;
   try {
+    writeFileSync(tmpFile, buf);
+    chmodSync(tmpFile, 0o755);
     renameSync(currentBin, backupFile);
     renameSync(tmpFile, currentBin);
-    chmodSync(currentBin, 0o755);
     unlinkSync(backupFile);
     console.log(`✓ Upgraded to v${latest.version}`);
   } catch (e: any) {
