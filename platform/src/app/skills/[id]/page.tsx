@@ -2,7 +2,9 @@ import { getSkillById, getSkillVersions } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { DeleteSkillButton } from "@/components/delete-skill-button";
+import { SkillFileBrowser } from "@/components/skill-file-browser";
 import Link from "next/link";
 
 export default async function SkillDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -24,6 +26,9 @@ export default async function SkillDetail({ params }: { params: Promise<{ id: st
             </div>
             <div className="flex items-center gap-2">
               <Badge className="bg-primary text-primary-foreground">v{skill.version}</Badge>
+              <Link href={`/publish?from=${encodeURIComponent(skill.name)}`}>
+                <Button variant="outline" size="sm">发布新版本</Button>
+              </Link>
               <DeleteSkillButton id={skill.id} name={skill.name} />
             </div>
           </div>
@@ -50,29 +55,13 @@ export default async function SkillDetail({ params }: { params: Promise<{ id: st
 
           {skill.files.length > 0 && (
             <div>
-              <h3 className="font-medium mb-2">Files</h3>
-              {skill.files.map((f) => (
-                <div key={f.path} className="mb-3">
-                  <p className="text-xs font-mono text-muted-foreground mb-1">{f.path}</p>
-                  <pre className="bg-muted p-3 rounded-md text-xs overflow-x-auto">{f.content}</pre>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {versions.length > 0 && (
-            <div>
-              <h3 className="font-medium mb-2">版本历史</h3>
-              <div className="space-y-1">
-                {versions.map((v) => (
-                  <div key={v.version} className="flex items-center gap-2 text-sm">
-                    <Badge className={v.version === skill.version ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}>
-                      v{v.version}{v.version === skill.version ? " (latest)" : ""}
-                    </Badge>
-                    <span className="text-muted-foreground">{new Date(v.createdAt).toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
+              <h3 className="font-medium mb-2">文件</h3>
+              <SkillFileBrowser
+                name={skill.name}
+                files={skill.files}
+                versions={versions.map((v) => v.version)}
+                currentVersion={skill.version}
+              />
             </div>
           )}
 
