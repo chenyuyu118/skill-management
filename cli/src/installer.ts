@@ -44,8 +44,10 @@ function getProjectDir(target: Platform): string {
   }
 }
 
-export function installSkill(target: Platform, skillName: string, files: SkillFile[], scope: Scope = "global") {
-  const baseDir = scope === "project" ? getProjectDir(target) : getGlobalDir(target);
+export function installSkill(target: Platform, skillName: string, files: SkillFile[], scope: Scope = "project") {
+  // claude-desktop 是桌面应用，无项目级目录，始终安装到 global
+  const useProject = scope === "project" && target !== "claude-desktop";
+  const baseDir = useProject ? getProjectDir(target) : getGlobalDir(target);
   const dir = join(baseDir, skillName);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   for (const f of files) {
@@ -57,8 +59,9 @@ export function installSkill(target: Platform, skillName: string, files: SkillFi
   return dir;
 }
 
-export function uninstallSkill(target: Platform, skillName: string, scope: Scope = "global"): string | null {
-  const baseDir = scope === "project" ? getProjectDir(target) : getGlobalDir(target);
+export function uninstallSkill(target: Platform, skillName: string, scope: Scope = "project"): string | null {
+  const useProject = scope === "project" && target !== "claude-desktop";
+  const baseDir = useProject ? getProjectDir(target) : getGlobalDir(target);
   const dir = join(baseDir, skillName);
   if (!existsSync(dir)) return null;
   rmSync(dir, { recursive: true });

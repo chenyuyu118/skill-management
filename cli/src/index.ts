@@ -51,7 +51,7 @@ async function main() {
       const pf = rest.indexOf("--platform");
       const targets = pf >= 0 ? rest[pf + 1].split(",") as typeof PLATFORMS : PLATFORMS;
       const sf = rest.indexOf("--scope");
-      const scope = (sf >= 0 ? rest[sf + 1] : "global") as "global" | "project";
+      const scope = (sf >= 0 ? rest[sf + 1] : "project") as "global" | "project";
       for (const t of targets) {
         const dir = installSkill(t, skill.name, skill.files, scope);
         console.log(`  ✓ [${scope}] 已安装 ${skill.name}@${skill.version} 到 ${t}: ${dir}`);
@@ -64,7 +64,7 @@ async function main() {
       const pf = rest.indexOf("--platform");
       const targets = pf >= 0 ? rest[pf + 1].split(",") as typeof PLATFORMS : PLATFORMS;
       const sf = rest.indexOf("--scope");
-      const scope = (sf >= 0 ? rest[sf + 1] : "global") as "global" | "project";
+      const scope = (sf >= 0 ? rest[sf + 1] : "project") as "global" | "project";
       for (const t of targets) {
         const dir = uninstallSkill(t, name, scope);
         if (dir) console.log(`  ✓ 已从 ${t} 移除: ${dir}`);
@@ -113,7 +113,7 @@ async function main() {
       const pf = args.indexOf("--platform");
       const targets = pf >= 0 ? args[pf + 1].split(",") as typeof PLATFORMS : PLATFORMS;
       const sf = args.indexOf("--scope");
-      const scope = (sf >= 0 ? args[sf + 1] : "global") as "global" | "project";
+      const scope = (sf >= 0 ? args[sf + 1] : "project") as "global" | "project";
       for (const t of targets) {
         const dir = installSkill(t, skill.name, skill.files, scope);
         console.log(`  ✓ 已更新 ${t}: ${dir}`);
@@ -188,7 +188,7 @@ async function main() {
 
 选项:
   --platform kiro,claude,codex,cursor,claude-desktop
-  --scope    global（默认）或 project（当前项目）
+  --scope    project（默认，当前项目）或 global（用户主目录）
 `);
   }
 }
